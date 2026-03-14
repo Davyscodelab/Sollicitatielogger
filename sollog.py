@@ -5,16 +5,14 @@
 import imaplib
 import email
 from email.header import decode_header
-import csv
+
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-load_dotenv()
 from openpyxl import load_workbook, Workbook
 
 # Instelling laden via dotenv, zodat het paswoord niet openbaar wordt
-# Zeker pip install python niet vergeten
-
+load_dotenv()
 # ─── INSTELLINGEN ───────────────────────────────────────────
 GMAIL_ADRES    = os.getenv("GMAIL_ADRES")
 APP_WACHTWOORD = os.getenv("APP_WACHTWOORD")
