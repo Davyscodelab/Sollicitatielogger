@@ -1,18 +1,20 @@
 #Sollicitatielog
-# Versie 1: Haalt info uit een Gmail map, en schrijft dit naar een CSV-bestand
-# Versie 2: Zelfde info, maar naar een Excel-bestand
+# versie 1: Haalt info uit een Gmail map, en schrijft dit naar een CSV-bestand
+# versie 2: Zelfde info, maar naar een Excel-bestand
 
 import imaplib
 import email
 from email.header import decode_header
-
+import csv
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+load_dotenv()
 from openpyxl import load_workbook, Workbook
 
 # Instelling laden via dotenv, zodat het paswoord niet openbaar wordt
-load_dotenv()
+# Zeker pip install python niet vergeten
+
 # ─── INSTELLINGEN ───────────────────────────────────────────
 GMAIL_ADRES    = os.getenv("GMAIL_ADRES")
 APP_WACHTWOORD = os.getenv("APP_WACHTWOORD")
@@ -61,7 +63,7 @@ def haal_mails_op():
         bericht = email.message_from_bytes(data[0][1])
         onderwerp = decodeer_header(bericht.get("Subject", "(geen onderwerp)"))
         van       = decodeer_header(bericht.get("From", "(onbekend)"))
-        van       = email.utils.parseaddr(aan)[1]
+        van       = email.utils.parseaddr(van)[1]          # → "manon@takto.be"
         domein    = van.split("@")[1] if "@" in van else ""  # → "takto.be"
         bedrijf   = domein.split(".")[-2].capitalize() if domein else "(onbekend)"  # → "Takto"
         datum_raw = bericht.get("Date", "")
@@ -90,7 +92,7 @@ def sla_op_als_excel(mails):
     if not os.path.exists(XLS_PAD):
         wb = Workbook()
         ws = wb.active
-        ws.append(["Datum", "Aan", "Bedrijf", "Onderwerp"])
+        ws.append(["Datum", "Van", "Bedrijf", "Onderwerp"])
         wb.save(XLS_PAD)
 
     wb = load_workbook(XLS_PAD)
@@ -108,7 +110,7 @@ def sla_op_als_excel(mails):
         return
 
     for m in nieuw:
-        ws.append([m["Datum"], m["Aan"], m["Bedrijf"], m["Onderwerp"]])
+        ws.append([m["Datum"], m["Van"], m["Bedrijf"], m["Onderwerp"]])
 
     wb.save(XLS_PAD)
     print(f"✅ {len(nieuw)} nieuwe sollicitatie(s) toegevoegd aan {XLS_PAD}")
