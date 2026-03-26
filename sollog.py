@@ -60,10 +60,10 @@ def haal_mails_op():
 
         bericht = email.message_from_bytes(data[0][1])
         onderwerp = decodeer_header(bericht.get("Subject", "(geen onderwerp)"))
-        aan       = decodeer_header(bericht.get("To", "(onbekend)"))
+        aan       = decodeer_header(bericht.get("From", "(onbekend)"))
         aan       = email.utils.parseaddr(aan)[1]
-        domein = aan.split("@")[1] if "@" in aan else ""
-        bedrijf = domein.split(".")[0].capitalize() if domein else "(onbekend)"
+        domein    = van.split("@")[1] if "@" in van else ""  # → "takto.be"
+        bedrijf   = domein.split(".")[-2].capitalize() if domein else "(onbekend)"  # → "Takto"
         datum_raw = bericht.get("Date", "")
 
         try:
@@ -74,7 +74,7 @@ def haal_mails_op():
 
         resultaten.append({
             "Datum":     datum,
-            "Aan":       aan,
+            "Van":       aan,
             "Bedrijf":   bedrijf,
             "Onderwerp": onderwerp,
             
